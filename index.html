@@ -120,8 +120,10 @@
     </div>
 
     <div class="task-section">
-        <label for="taskInput">Current Task</label>
-        <input type="text" id="taskInput" placeholder="Enter what you want to work on" />
+        <label for="taskInput">Add Task</label>
+        <input type="text" id="taskInput" placeholder="Enter a task" />
+        <button class="primary" id="addTaskBtn" style="margin-top: 10px;">Add Task</button>
+        <ul id="taskList" style="margin-top: 15px; padding-left: 20px;"></ul>
     </div>
 </div>
 
@@ -133,6 +135,9 @@
     const focusBtn = document.getElementById('focusBtn');
     const shortBreakBtn = document.getElementById('shortBreakBtn');
     const longBreakBtn = document.getElementById('longBreakBtn');
+    const taskInput = document.getElementById('taskInput');
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const taskList = document.getElementById('taskList');
 
     const modes = {
       focus: { label: 'Focus Session', time: 25 * 60 },
@@ -199,6 +204,19 @@
       startPauseBtn.textContent = 'Start';
       timeLeft = modes[currentMode].time;
       updateDisplay();
+    });
+
+    addTaskBtn.addEventListener('click', () => {
+        const taskText = taskInput.value.trim();
+
+         if (taskText === '') return;
+
+         const li = document.createElement('li');
+         li.textContent = taskText;
+         li.style.marginBottom = '8px';
+
+        taskList.appendChild(li);
+         taskInput.value = '';
     });
 
     focusBtn.addEventListener('click', () => switchMode('focus', focusBtn));
