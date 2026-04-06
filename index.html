@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pomodoro Timer</title>
+    <style>
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          font-family: Arial, sans-serif;
+        }
+
+        body {
+          background: #f4f4f4;
+          min-height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 20px;
+        }
+
+        .container {
+          background: #ffffff;
+          width: 100%;
+          max-width: 420px;
+          padding: 30px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          text-align: center;
+        }
+
+        h1 {
+          margin-bottom: 20px;
+          font-size: 28px;
+        }
+
+        .mode {
+          margin-bottom: 15px;
+          font-size: 18px;
+          font-weight: bold;
+        }
+
+        .timer {
+          font-size: 56px;
+          margin: 20px 0;
+        }
+
+        .buttons {
+          display: flex;
+          gap: 10px;
+          justify-content: center;
+          margin-bottom: 20px;
+          flex-wrap: wrap;
+        }
+
+        button {
+          padding: 10px 16px;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+        }
+
+        .primary {
+          background: #333;
+          color: white;
+        }
+
+        .secondary {
+          background: #ddd;
+        }
+
+        .session-buttons {
+          display: flex;
+          gap: 10px;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        .active {
+          outline: 2px solid #333;
+        }
+
+        .task-section {
+          margin-top: 20px;
+          text-align: left;
+        }
+
+        .task-section label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: bold;
+        }
+
+        .task-section input {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Pomodoro Timer</h1>
+    <div class="mode" id="modeLabel">Focus Session</div>
+    <div class="timer" id="timerDisplay">25:00</div>
+
+    <div class="buttons">
+        <button class="primary" id="startPauseBtn">Start</button>
+        <button class="secondary" id="resetBtn">Reset</button>
+    </div>
+
+    <div class="session-buttons">
+        <button class="secondary active" id="focusBtn">Focus</button>
+        <button class="secondary" id="shortBreakBtn">Short Break</button>
+        <button class="secondary" id="longBreakBtn">Long Break</button>
+    </div>
+
+    <div class="task-section">
+        <label for="taskInput">Current Task</label>
+        <input type="text" id="taskInput" placeholder="Enter what you want to work on" />
+    </div>
+</div>
+
+<script>
+    const timerDisplay = document.getElementById('timerDisplay');
+    const modeLabel = document.getElementById('modeLabel');
+    const startPauseBtn = document.getElementById('startPauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const focusBtn = document.getElementById('focusBtn');
+    const shortBreakBtn = document.getElementById('shortBreakBtn');
+    const longBreakBtn = document.getElementById('longBreakBtn');
+
+    const modes = {
+      focus: { label: 'Focus Session', time: 25 * 60 },
+      shortBreak: { label: 'Short Break', time: 5 * 60 },
+      longBreak: { label: 'Long Break', time: 15 * 60 }
+    };
+
+    let currentMode = 'focus';
+    let timeLeft = modes[currentMode].time;
+    let timer = null;
+    let isRunning = false;
+
+    function updateDisplay() {
+      const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+      const seconds = String(timeLeft % 60).padStart(2, '0');
+      timerDisplay.textContent = `${minutes}:${seconds}`;
+      modeLabel.textContent = modes[currentMode].label;
+    }
+
+    function setActiveButton(activeButton) {
+      [focusBtn, shortBreakBtn, longBreakBtn].forEach(btn => btn.classList.remove('active'));
+      activeButton.classList.add('active');
+    }
+
+    function switchMode(mode, button) {
+      clearInterval(timer);
+      isRunning = false;
+      startPauseBtn.textContent = 'Start';
+      currentMode = mode;
+      timeLeft = modes[mode].time;
+      setActiveButton(button);
+      updateDisplay();
+    }
+
+    function startTimer() {
+      timer = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          updateDisplay();
+        } else {
+          clearInterval(timer);
+          isRunning = false;
+          startPauseBtn.textContent = 'Start';
+          alert(`${modes[currentMode].label} completed!`);
+        }
+      }, 1000);
+    }
+
+    startPauseBtn.addEventListener('click', () => {
+      if (!isRunning) {
+        isRunning = true;
+        startPauseBtn.textContent = 'Pause';
+        startTimer();
+      } else {
+        isRunning = false;
+        startPauseBtn.textContent = 'Start';
+        clearInterval(timer);
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      clearInterval(timer);
+      isRunning = false;
+      startPauseBtn.textContent = 'Start';
+      timeLeft = modes[currentMode].time;
+      updateDisplay();
+    });
+
+    focusBtn.addEventListener('click', () => switchMode('focus', focusBtn));
+    shortBreakBtn.addEventListener('click', () => switchMode('shortBreak', shortBreakBtn));
+    longBreakBtn.addEventListener('click', () => switchMode('longBreak', longBreakBtn));
+
+    updateDisplay();
+</script>
+</body>
+</html>
