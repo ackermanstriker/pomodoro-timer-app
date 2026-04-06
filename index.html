@@ -108,6 +108,10 @@
     <div class="mode" id="modeLabel">Focus Session</div>
     <div class="timer" id="timerDisplay">25:00</div>
 
+    <div id="sessionCounter" style="margin-top: 10px; font-weight: bold;">
+        Sessions Completed: 0
+    </div>
+
     <div class="buttons">
         <button class="primary" id="startPauseBtn">Start</button>
         <button class="secondary" id="resetBtn">Reset</button>
@@ -138,6 +142,8 @@
     const taskInput = document.getElementById('taskInput');
     const addTaskBtn = document.getElementById('addTaskBtn');
     const taskList = document.getElementById('taskList');
+    let sessionCount = 0;
+    const sessionCounter = document.getElementById('sessionCounter');
 
     const modes = {
       focus: { label: 'Focus Session', time: 25 * 60 },
@@ -178,10 +184,22 @@
           timeLeft--;
           updateDisplay();
         } else {
-          clearInterval(timer);
-          isRunning = false;
-          startPauseBtn.textContent = 'Start';
-          alert(`${modes[currentMode].label} completed!`);
+            clearInterval(timer);
+            isRunning = false;
+            startPauseBtn.textContent = 'Start';
+
+            if (currentMode === 'focus') {
+                sessionCount++;
+                updateSessionDisplay();
+
+            if (sessionCount % 4 === 0) {
+                switchMode('longBreak', longBreakBtn);
+            } else {
+                switchMode('shortBreak', shortBreakBtn);
+            }
+        } else {
+            switchMode('focus', focusBtn);
+        }
         }
       }, 1000);
     }
@@ -219,11 +237,16 @@
          taskInput.value = '';
     });
 
+    function updateSessionDisplay() {
+        sessionCounter.textContent = `Sessions Completed: ${sessionCount}`;
+    }
+
     focusBtn.addEventListener('click', () => switchMode('focus', focusBtn));
     shortBreakBtn.addEventListener('click', () => switchMode('shortBreak', shortBreakBtn));
     longBreakBtn.addEventListener('click', () => switchMode('longBreak', longBreakBtn));
 
     updateDisplay();
+    updateSessionDisplay();
 </script>
 </body>
 </html>
