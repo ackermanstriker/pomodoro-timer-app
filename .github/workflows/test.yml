@@ -11,4 +11,4 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run a simple command
-        run: echo "CI is working!"
+        run: echo "Second run test!"
